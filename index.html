@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta name="robots" content="{if $page.noindex==2}noindex,follow{elseif $page.noindex==3}index,nofollow{elseif $page.noindex}none{else}all{/if}"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="{$page.description}" />
+<meta name="keywords" content="{$page.keywords}" />
+<title>{$page.title|strip_tags}</title>
+<script src="http://ugoogle.oml.ru/g/libs/vue/2.4.3/vue.min.js"></script>
+</head>
+<body>
+	<div id="app">
+		<input v-on:keyup="start" v-model="inputText" type="number" placeholder="Введите число">
+		<div>{{numberText}}</div>
+	</div>
+	<script>
+	function debounce(func, wait, immediate) {
+	  var timeout;
+	
+	  return function executedFunction() {
+	    var context = this;
+	    var args = arguments;
+		    
+	    var later = function() {
+	      timeout = null;
+	      if (!immediate) func.apply(context, args);
+	    };
+	
+	    var callNow = immediate && !timeout;
+		
+	    clearTimeout(timeout);
+	
+	    timeout = setTimeout(later, wait);
+		
+	    if (callNow) func.apply(context, args);
+	  };
+	};
+	var app = new Vue({
+		el: '#app',
+		data: {
+			inputText: "",
+			numberText: ""
+		},
+		methods: {
+		  	start: debounce(function() {
+		  		if (this.inputText != "") {
+					function toText(enterNumber) {
+						var mainString = '', 
+							mainUnits = [
+							['','тысяч','миллион','миллиард','триллион','квадриллион','квинтиллион','секстиллион','септиллион','октиллион','нониллион','дециллион','ундециллион','дуодециллион','тредециллион','квиндециллион','септдециллион','вигинтиллион'],
+							['а','и',''],
+							['','а','ов'],
+							['',' один',' два',' три',' четыре',' пять',' шесть',' семь',' восемь',' девять'],
+							[' десять',' одиннадцать',' двенадцать',' тринадцать',' четырнадцать',' пятнадцать',' шестнадцать',' семнадцать',' восемнадцать',' девятнадцать'],
+							['','',' двадцать',' тридцать',' сорок',' пятьдесят',' шестьдесят',' семьдесят',' восемьдесят',' девяносто'],
+							['',' сто',' двести',' триста',' четыреста',' пятьсот',' шестьсот',' семьсот',' восемьсот',' девятьсот'],
+							['',' одна',' две']
+						];
+						
+						if (enterNumber == '' || enterNumber == '0') return ' ноль';
+						
+						enterNumber = enterNumber.split(/(?=(?:\d{3})+$)/);
+						
+						if (enterNumber[0].length == 1){
+							enterNumber[0] = '00'+enterNumber[0];
+						}
+						
+						if (enterNumber[0].length == 2){
+							enterNumber[0] = '0'+enterNumber[0];
+						}
+						
+						function threeDigitModif(threeDigitVal, d) {
+							if(threeDigitVal[1] == 1){
+								return mainUnits[6][threeDigitVal[0]] + mainUnits[4][threeDigitVal[2]];
+							}else{
+								if(d){
+									return mainUnits[6][threeDigitVal[0]] + mainUnits[5][threeDigitVal[1]] + mainUnits[7][threeDigitVal[2]];
+								}else{
+									return mainUnits[6][threeDigitVal[0]] + mainUnits[5][threeDigitVal[1]] + mainUnits[3][threeDigitVal[2]];
+								}
+							}
+						}
+						
+						function endsModif(n, t, o) {
+							var k = [2,0,1,1,1,2,2,2,2,2];
+							if(t == ''){
+								return '';
+							}else{
+								if(n[n.length-2] == "1"){
+									return ' ' + t + o[2];
+								}else{
+									return ' ' + t + o[k[n[n.length-1]]];
+								}
+							}
+						}
+						
+						for (var i = (enterNumber.length - 1); i >= 0; i--) {
+							if (enterNumber[i] != '000') {
+								if(i == enterNumber.length - 2 && (enterNumber[i][2] == '1' || enterNumber[i][2] == '2')){
+									if(i == enterNumber.length - 2){
+										mainString = threeDigitModif(enterNumber[i],1) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[1]) + mainString;
+									}else{
+										mainString = threeDigitModif(enterNumber[i],1) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[2]) + mainString;
+									}
+								}else{
+									if(i == enterNumber.length - 2){
+										mainString = threeDigitModif(enterNumber[i]) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[1]) + mainString;
+									}else{
+										mainString = threeDigitModif(enterNumber[i]) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[2]) + mainString;
+									}
+								}
+							}
+						}
+						
+						return mainString;
+					}
+					
+					this.numberText = toText(this.inputText);
+		  		}
+		  	}, 1000)
+		}		
+	});
+	</script>
+</body>
+</html>
