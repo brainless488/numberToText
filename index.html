@@ -97,17 +97,11 @@
 						for (var i = (enterNumber.length - 1); i >= 0; i--) {
 							if (enterNumber[i] != '000') {
 								if(i == enterNumber.length - 2 && (enterNumber[i][2] == '1' || enterNumber[i][2] == '2')){
-									if(i == enterNumber.length - 2){
-										mainString = threeDigitModif(enterNumber[i],1) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[1]) + mainString;
-									}else{
-										mainString = threeDigitModif(enterNumber[i],1) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[2]) + mainString;
-									}
+									mainString = threeDigitModif(enterNumber[i],1) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[1]) + mainString;
+								}else if (i == enterNumber.length - 2){
+									mainString = threeDigitModif(enterNumber[i]) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[1]) + mainString;
 								}else{
-									if(i == enterNumber.length - 2){
-										mainString = threeDigitModif(enterNumber[i]) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[1]) + mainString;
-									}else{
-										mainString = threeDigitModif(enterNumber[i]) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[2]) + mainString;
-									}
+									mainString = threeDigitModif(enterNumber[i]) + endsModif(enterNumber[i], mainUnits[0][enterNumber.length - 1 - i], mainUnits[2]) + mainString;
 								}
 							}
 						}
